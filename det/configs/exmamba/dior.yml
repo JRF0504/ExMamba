@@ -1,0 +1,39 @@
+__include__: [
+  '../dataset/dior.yml',
+  '../runtime.yml',
+  '../base/dataloader.yml',
+  '../base/rt_optimizer.yml',
+  '../base/exmamba.yml',
+  '../base/rt_deim.yml',
+]
+
+output_dir: ./output/exmamba_dior
+
+optimizer:
+  type: AdamW
+  params:
+    -
+      params: '^(?=.*backbone)(?!.*norm).*$'
+      lr: 0.0002
+    -
+      params: '^(?=.*(?:norm|bn)).*$'
+      weight_decay: 0.
+
+  lr: 0.0002
+  betas: [0.9, 0.999]
+  weight_decay: 0.0001
+
+# change part
+epoches: 100
+flat_epoch: 54    # 4 + epoch / 2
+no_aug_epoch: 8
+
+train_dataloader:
+  dataset:
+    transforms:
+      policy:
+        epoch: [4, 54, 92]   # list
+
+  collate_fn:
+    mixup_epochs: [4, 54]
+    stop_epoch: 92
